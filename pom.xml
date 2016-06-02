@@ -10,6 +10,7 @@
     <properties>
         <jdk.version>8</jdk.version>
         <jdk>${env.JAVA_HOME}}</jdk>
+        <pdftoelasticsearch.home>./</pdftoelasticsearch.home>
     </properties>
 
     <dependencies>
@@ -45,6 +46,41 @@
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${pdftoelasticsearch.home}/libs/java/thirdparty/
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.2</version>
+                <executions>
+                    <execution>
+                        <id>PdftoElasticsearch</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>pdf-to-elasticsearch</finalName>
+                            <!-- jar 파일이 생성될 폴더 -->
+                            <outputDirectory>${pdftoelasticsearch.home}/libs/java</outputDirectory>
+                            <archive>
+                                <manifest>
+                                    <!-- public static void main() 함수가 있는 클래스 지정 -->
+                                    <mainClass>net.woocheol.pdftoelasticsearch</mainClass>
+                                    <!-- jar 파일 META-INF/MANIFEST.MF 에 클래스패스 정보 추가 -->
+                                    <addClasspath>true</addClasspath>
+                                    <!-- 클래스패스에 추가시 prefix 설정 ex) log4j-1.2.16.jar -> lib/log4j-1.2.16.jar
+                                        로 추가됨 -->
+                                    <classpathPrefix>./thirdparty/</classpathPrefix>
+                                </manifest>
+                            </archive>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -60,27 +96,36 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.2</version>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>pdftoelasticsearch</id>
-                        <phase>package</phase>
+                        <id>copy</id>
+                        <phase>install</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <mainClass>net.woocheol.pdftoelasticsearch.PDFReader</mainClass>
-                                    <addClasspath>true</addClasspath>
-                                </manifest>
-                            </archive>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>net.woocheol.pdftoelasticsearch.PDFReader</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resource</directory>
+            </resource>
+        </resources>
     </build>
 
 </project>
