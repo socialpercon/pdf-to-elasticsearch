@@ -31,10 +31,11 @@ public class PDFFile extends Entry{
     public ArrayList<XContentBuilder> extractText() {
         try{
             if(file.isFile() && file.getName().contains("pdf")) {
+                String fName = file.getName();
+                System.out.println(fName);
                 PDDocument pddDocument = PDDocument.load(file); // NOSONAR
                 PDFTextStripper reader = new PDFTextStripper();
                 int numberOfPages = pddDocument.getNumberOfPages();
-                String fName = file.getName();
                 ArrayList<XContentBuilder> contents = new ArrayList<XContentBuilder>();
                 for (int i = 1; i <= numberOfPages; i++) {
                     reader.setStartPage(i);
@@ -47,10 +48,15 @@ public class PDFFile extends Entry{
                             .endObject();
                     contents.add(content);
                 }
+                pddDocument.close();
+                System.out.println("pages : " + contents.size() + ", title : " + fName);
                 return contents;
             }
-        }catch(Exception e) {
+        } catch(NoClassDefFoundError e) {
+            return null;
 
+        } catch(Exception e) {
+            return null;
         }
 
         return null;

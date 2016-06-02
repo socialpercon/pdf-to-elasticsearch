@@ -37,14 +37,13 @@ public class ListVisitor extends Visitor{
                                 contents.get(i)
                         )
                 );
-
             }
+            System.out.println("request num : " + bulkRequest.numberOfActions());
             BulkResponse bulkResponse = bulkRequest.get();
             if (bulkResponse.hasFailures()) {
                 System.err.println("bulk insert failed : " + file.getName());
                 // process failures by iterating through each bulk response item
             }
-
         }
     }
 
